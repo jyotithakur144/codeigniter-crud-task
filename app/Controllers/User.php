@@ -27,10 +27,14 @@ class User extends BaseController
         $validation = \Config\Services::validation();
         $validation->setRules([
             'name'   => 'required|min_length[3]',
-            'email'  => 'required|valid_email|is_unique[users.email]',
+            'email'  => 'required|valid_email|uniqueEmailExceptDeleted[id]',
             'mobile' => 'required|integer|max_length[10]',
             'gender' => 'required',
             'state'  => 'required'
+        ], [
+            'email' => [
+                'uniqueEmailExceptDeleted' => 'This email is already taken by another active user.'
+            ]
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
@@ -66,17 +70,21 @@ class User extends BaseController
         $validation = \Config\Services::validation();
         $validation->setRules([
             'name'   => 'required|min_length[3]',
-            'email'  => 'required|valid_email',
+            'email'  => 'required|valid_email|uniqueEmailExceptDeleted[id]', //fix unique email issue
             'mobile' => 'required|integer|max_length[10]',
             'gender' => 'required',
             'state'  => 'required'
+        ], [
+            'email' => [
+                'uniqueEmailExceptDeleted' => 'This email is already taken by another active user.'
+            ]
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
             $userModel = new UserModel();
             $data['user'] = $userModel->find($id);
             $data['validation'] = $validation;
-            return view('users/edit', $data); 
+            return view('users/edit', $data);
         }
 
         $userModel = new UserModel();
@@ -97,5 +105,5 @@ class User extends BaseController
         $userModel->delete($id);
 
         return redirect()->to('/user')->with('success', 'User deleted successfully');
-    }   
+    }
 }

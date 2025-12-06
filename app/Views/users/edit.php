@@ -16,6 +16,7 @@
 
     <form method="post" action="<?= base_url('user/update/'.$user['id']); ?>">
         <?= csrf_field() ?>
+        <input type="hidden" name="id" value="<?= $user['id'] ?>">
 
         Name: <input type="text" name="name" value="<?= set_value('name', $user['name']); ?>">
         <?= isset($validation) ? '<span class="error">' . $validation->showError('name') . '</span>' : '' ?><br>
